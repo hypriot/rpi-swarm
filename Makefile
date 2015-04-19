@@ -12,7 +12,7 @@ push:
 	docker push $(DOCKER_IMAGE_NAME)
 
 test:
-	docker run --rm $(DOCKER_IMAGE_TAGNAME) /swarm --help
+	docker run --rm $(DOCKER_IMAGE_TAGNAME) --help
 
 version:
-	docker run --rm $(DOCKER_IMAGE_TAGNAME) /swarm --version
+	docker run --rm $(DOCKER_IMAGE_TAGNAME) --version
