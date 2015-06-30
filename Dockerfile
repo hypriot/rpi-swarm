@@ -1,12 +1,11 @@
 FROM scratch
 MAINTAINER Dieter Reuter <dieter@hypriot.com>
+MAINTAINER Andreas Eiermann <andreas@hypriot.com>
 
-COPY ./swarm /swarm
-COPY ./certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+ADD content /
 
 ENV SWARM_HOST :2375
 EXPOSE 2375
-
 VOLUME /.swarm
 
 ENTRYPOINT ["/swarm"]
