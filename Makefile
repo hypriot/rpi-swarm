@@ -3,6 +3,7 @@ SHA := $(shell git rev-parse --short HEAD)
 targz_file := $(shell cat FILEPATH)
 timestamp := $(shell date +"%Y%m%d%H%M")
 VERSION :=$(shell cat VERSION)        	
+#NAMESPACE :=$(shell cat NAMESPACE)
 
 
 default: loadS3_and_extract dockerbuild test version push
