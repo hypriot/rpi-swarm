@@ -21,6 +21,8 @@ make build
 #### Run the Docker Image and get the version of the installed `Docker Swarm`
 ```bash
 make version
+```
+>>>>>>> changes gogs to swarm since it is a swarm repo
 
 #### Push the Docker Image to the Docker Hub
 * First use a `docker login` with username, password and email address
@@ -53,3 +55,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
