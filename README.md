@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # rpi-swarm
 
 [![dockeri.co](http://dockeri.co/image/hypriot/rpi-swarm)](https://registry.hub.docker.com/u/hypriot/rpi-swarm/)
