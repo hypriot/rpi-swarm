@@ -1,32 +1,26 @@
-# rpi-gogs-raspbian
+# rpi-swarm
 
-[![dockeri.co](http://dockeri.co/image/hypriot/rpi-gogs-raspbian)](https://registry.hub.docker.com/u/hypriot/rpi-gogs-raspbian/)
+[![dockeri.co](http://dockeri.co/image/hypriot/rpi-swarm)](https://registry.hub.docker.com/u/hypriot/rpi-swarm/)
 
-Raspberry Pi compatible Docker Image with a minimal `gogs git` server.
-
-## Details
-- [BLOG with tutorial](http://blog.hypriot.com/post/run-your-own-github-like-service-with-docker/)
-- [Source Project Page](https://github.com/hypriot)
-- [Source Repository](https://github.com/hypriot/rpi-gogs-raspbian)
-
-## Start a gogs git server
-```bash
-docker run -d --name my-go-git-server --publish 8022:22 --publish 3000:3000 --volume `pwd`/gogs-data/:/data hypriot/rpi-gogs-raspbian
-```
-Now you can access the new gogs installation by opening `http://< IP of your Raspberry Pi>:3000` in your browser
-
-## How to create this image
+Raspberry Pi compatible Docker image with [Docker Swarm](https://github.com/docker/swarm).
 
 Run all the commands from within the project root directory.
 
-### Build the Docker Image
+### Build Details
+- [Source Project Page](https://github.com/hypriot)
+- [Source Repository](https://github.com/hypriot/rpi-swarm)
+- [Dockerfile](https://github.com/hypriot/rpi-swarm/blob/master/Dockerfile)
+- [DockerHub] (https://registry.hub.docker.com/u/hypriot/rpi-swarm/)
+
+
+#### Build the Docker Image
 ```bash
-make dockerbuild
+make build
 ```
 
-#### Test the Docker Image
+#### Run the Docker Image and get the version of the installed `Docker Swarm`
 ```bash
-make testimg
+make version
 ```
 
 #### Push the Docker Image to the Docker Hub
@@ -60,3 +54,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
