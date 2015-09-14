@@ -33,7 +33,7 @@ testimg:
 
 saveimage:
 	mkdir -p /build/
-	docker save -o /swarm-$(timestamp)-$(VERSION).tar $(NAMESPACE)/$(IMAGENAME):latest
+	docker save --output=/build/swarm-$(timestamp)-$(VERSION).tar $(NAMESPACE)/$(IMAGENAME):latest
 push:
 	# push VERSION
 	docker tag -f $(NAMESPACE)/$(IMAGENAME):latest $(REGISTRY_URL)/$(NAMESPACE)/$(IMAGENAME):$(VERSION)
