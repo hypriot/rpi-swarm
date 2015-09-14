@@ -2,7 +2,7 @@ IMAGENAME := $(shell basename `git rev-parse --show-toplevel`)
 SHA := $(shell git rev-parse --short HEAD)
 targz_file := $(shell cat FILEPATH)
 timestamp := $(shell date +"%Y%m%d%H%M")
-VERSION :=$(shell cat VERSION)        	
+VERSION :=$(shell cat VERSION | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]$//')  	
 #NAMESPACE :=$(shell cat NAMESPACE)
 
 default: loadS3_and_extract dockerbuild saveimage test version push
@@ -33,7 +33,7 @@ testimg:
 
 saveimage:
 	mkdir -p /build/
-	docker save --output=/build/swarm-$(timestamp)-$(VERSION).tar $(NAMESPACE)/$(IMAGENAME):latest
+	docker save --output="/build/swarm-$(timestamp)-$(VERSION).tar" $(NAMESPACE)/$(IMAGENAME):latest
 push:
 	# push VERSION
 	docker tag -f $(NAMESPACE)/$(IMAGENAME):latest $(REGISTRY_URL)/$(NAMESPACE)/$(IMAGENAME):$(VERSION)
