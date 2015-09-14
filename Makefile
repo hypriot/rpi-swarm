@@ -10,10 +10,10 @@ default: loadS3_and_extract dockerbuild saveimage test version push
 
 test:
 	docker run --rm $(NAMESPACE)/$(IMAGENAME) --help
-        
+
 version:
 	docker run --rm $(NAMESPACE)/$(IMAGENAME) --version                
-                
+
 loadS3_and_extract:
 	aws s3 cp s3://$(AWS_BUCKET)/$(targz_file) ./binary.tar.gz
 	mkdir content/
