@@ -6,7 +6,7 @@ VERSION :=$(shell cat VERSION)
 #NAMESPACE :=$(shell cat NAMESPACE)
 
 
-default: loadS3_and_extract dockerbuild test version push
+default: loadS3_and_extract dockerbuild saveimage test version push
 
 test:
 	docker run --rm $(NAMESPACE)/$(IMAGENAME) --help
@@ -32,6 +32,9 @@ testimg:
 	docker inspect -f '{{.NetworkSettings.IPAddress}}' new-$(IMAGENAME)
 	docker logs -f new-$(IMAGENAME)
 
+saveimage:
+	mkdir -p /build/
+	docker save -o /swarm-$(timestamp)-$(VERSION).tar $(NAMESPACE)/$(IMAGENAME):latest
 push:
 	# push VERSION
 	docker tag -f $(NAMESPACE)/$(IMAGENAME):latest $(REGISTRY_URL)/$(NAMESPACE)/$(IMAGENAME):$(VERSION)
