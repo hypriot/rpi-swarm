@@ -34,7 +34,9 @@ testimg:
 
 saveimage:
 	mkdir -p /build/
-	docker save --output="/build/swarm-$(timestamp)-$(VERSION).tar" $(NAMESPACE)/$(IMAGENAME):latest
+	docker tag $(NAMESPACE)/$(IMAGENAME):latest hypriot/rpi-swarm
+	docker save --output="/build/swarm-$(timestamp)-$(VERSION).tar" hypriot/rpi-swarm
+	
 push:
 	# push VERSION
 	docker tag -f $(NAMESPACE)/$(IMAGENAME):latest $(REGISTRY_URL)/$(NAMESPACE)/$(IMAGENAME):$(VERSION)
