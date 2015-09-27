@@ -22,7 +22,6 @@ make build
 ```bash
 make version
 ```
->>>>>>> changes gogs to swarm since it is a swarm repo
 
 #### Push the Docker Image to the Docker Hub
 * First use a `docker login` with username, password and email address
