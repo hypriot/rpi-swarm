@@ -145,7 +145,7 @@ copy_binary_to_upload_folder:
 	mkdir -p $(BUILD_DIR)/binary/
 	cp $(BINARY_NAME) $(BUILD_DIR)/binary/
 	cd $(BUILD_DIR)/binary/ && shasum -a 256 $(BINARY_NAME) > $(BINARY_NAME).sha256
-	BINARY_SIZE = $(shell stat -c %s $(BUILD_DIR)/binary/$(BINARY_NAME))
+#	BINARY_SIZE = $(shell stat -c %s $(BUILD_DIR)/binary/$(BINARY_NAME))
 
 copy_deb_to upload_folder:
         pwd && ls -la .
