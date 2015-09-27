@@ -119,7 +119,7 @@ dockerpush:
 	docker push $(REGISTRY_URL)/$(REGISTRY_NAMESPACE)/$(BINARY_NAME):$(DATE)
 	# push latest
 	docker tag -f $(REGISTRY_NAMESPACE)/$(BINARY_NAME):latest $(REGISTRY_URL)/$(REGISTRY_NAMESPACE)/$(BINARY_NAME):latest
-	docker push $(REGISTRY_URL)/$(REGISTRY_NAMESPACE)/$(IMAGENAME):latest
+	docker push $(REGISTRY_URL)/$(REGISTRY_NAMESPACE)/$(BINARY_NAME):latest
 	# remove tags
 	docker rmi $(REGISTRY_URL)/$(REGISTRY_NAMESPACE)/$(BINARY_NAME):$(VERSION) || true
 	docker rmi $(REGISTRY_URL)/$(REGISTRY_NAMESPACE)/$(BINARY_NAME):$(COMMIT_HASH) || true
