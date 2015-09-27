@@ -128,6 +128,7 @@ dockerpush:
 
 # save the image as tar
 dockersave:
+	mkdir -p $(BUILD_DIR)
 	docker tag $(REGISTRY_NAMESPACE)/$(BINARY_NAME):latest hypriot/$(BINARY_NAME)
 	docker save --output="$(BUILD_DIR)/$(BINARY_NAME).tar" hypriot/$(BINARY_NAME)
 
