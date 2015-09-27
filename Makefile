@@ -148,8 +148,8 @@ copy_binary_to_upload_folder:
 #	BINARY_SIZE = $(shell stat -c %s $(BUILD_DIR)/binary/$(BINARY_NAME))
 
 copy_deb_to upload_folder:
-        pwd && ls -la .
-        cp -r builds/* $(BUILD_DIR)/package/
+	pwd && ls -la .
+	cp -r builds/* $(BUILD_DIR)/package/
 
 create_sha256_checksums:
 	echo create checksums
