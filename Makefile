@@ -1,5 +1,5 @@
 # repo name
-BINARY_NAME ?= $(shell basename `git rev-parse --show-toplevel`)
+BINARY_NAME = $(shell basename `git rev-parse --show-toplevel`)
 
 DATE := $(shell date -Idate)
 #$(shell date +"%Y%m%d%H%M")
@@ -128,7 +128,7 @@ dockerpush:
 
 # save the image as tar
 dockersave:
-	docker tag $(NAMESPACE)/$(IMAGENAME):latest hypriot/$(BINARY_NAME)
+	docker tag $(REGISTRY_NAMESPACE)/$(BINARY_NAME):latest hypriot/$(BINARY_NAME)
 	docker save --output="$(BUILD_DIR)/$(BINARY_NAME).tar" hypriot/$(BINARY_NAME)
 
 # pull a docker image from a docker registry
