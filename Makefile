@@ -145,7 +145,9 @@ upload_to_packagecloud:
 copy_binary_to_upload_folder:
 	mkdir -p $(BUILD_DIR)/binary/
 	cp $(BINARY_NAME) $(BUILD_DIR)/binary/
-	cd $(BUILD_DIR)/binary/ && shasum -a 256 $(BINARY_NAME) > $(BINARY_NAME).sha256
+	cd $(BUILD_DIR)/binary/ && \
+	shasum -a 256 $(BINARY_NAME) > $(BINARY_NAME).sha256 && \
+	cat $(BINARY_NAME).sha256
 #	BINARY_SIZE = $(shell stat -c %s $(BUILD_DIR)/binary/$(BINARY_NAME))
 
 copy_deb_to upload_folder:
@@ -156,6 +158,7 @@ create_sha256_checksums:
 	echo create checksums
 	find_files = $(notdir $(wildcard $(BUILD_DIR)/package/*))
 	echo $(foreach dir,$(find_files),$(shell cd $(BUILD_DIR)/package && shasum -a 256 $(dir) >> $(dir).sha256))
+	cd $(BUILD_DIR)/package && cat *.sha256
 
 build_debian_package:
 	echo "build debian package"
