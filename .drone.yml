@@ -14,6 +14,7 @@ build:
     - go get -d -v ./...
     - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
     - echo -e "#####\ncreate tar and checksum\n#####"
+    - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
     - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
