@@ -27,6 +27,9 @@ build:
     - mkdir -p ${BUILD_DIR}
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
     - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
+    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
+    - mkdir -p ${IMAGE_DIR}
+    - ln -s ${IMAGE_DIR} /drone/src/buildresult/latest
 
 publish:
   docker:
