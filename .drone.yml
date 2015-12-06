@@ -3,6 +3,8 @@ debug: true
 build:
   image: hypriot/rpi-golang:1.5
   commands:
+    - export DESCRIPTION=$(cat DESCRIPTION)
+    - export DEPENDENCIES=$(cat DEPENDENCIES)
     - apt-get update && apt-get install -y mercurial ca-certificates
     - export VERSION=v1.0.0
     - git clone --branch v1.0.0 https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
@@ -26,8 +28,6 @@ build:
     - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
 #
     - echo -e "#####\create deb and checksum\n#####"
-    - export DESCRIPTION=$(cat DESCRIPTION)
-    - export DEPENDENCIES=$(cat DEPENDENCIES)
     - mkdir -p ${BUILD_DIR}/package/${PACKAGE_NAME}/DEBIAN 
     - mkdir -p ${BUILD_DIR}/package/${PACKAGE_NAME}/usr/local/bin
     - echo -e "Package: swarm\nVersion: ${VERSION}-${BUILD_NUMBER}\nSection: admin\nPriority: optional\nArchitecture: armhf\nEssential: no\nInstalled-Size: <SIZE>\nMaintainer: blog.hypriot.com\nDescription: ${DESCRIPTION}\n${DEPENDENCIES}" > ${BUILD_DIR}/package/${PACKAGE_NAME}/DEBIAN/control
@@ -57,7 +57,7 @@ publish:
       - v1.0.0
       - latest
     save:
-      file: /drone/src/buildresultlatest/
+      file: /drone/src/buildresult/latest/swarm.tar
 
   s3:   
     acl: public-read
@@ -65,7 +65,7 @@ publish:
     bucket: $$AWS_BUCKET
     access_key: $$AWS_ACCESS_KEY_ID
     secret_key: $$AWS_SECRET_ACCESS_KEY
-    source: /drone/src/buildresult
+    source: /drone/src/buildresult/
     target: /
     recursive: true
 
