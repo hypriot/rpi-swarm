@@ -3,8 +3,8 @@ debug: true
 build:
   image: hypriot/rpi-golang:1.5
   commands:
-    - export DESCRIPTION=$(cat DESCRIPTION)
-    - export DEPENDENCIES=$(cat DEPENDENCIES)
+    - export DESCRIPTION="$(cat DESCRIPTION)"
+    - export DEPENDENCIES="$(cat DEPENDENCIES)"
     - apt-get update && apt-get install -y mercurial ca-certificates
     - export VERSION=v1.0.0
     - git clone --branch v1.0.0 https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
@@ -13,7 +13,6 @@ build:
     - go get -v -d github.com/docker/swarm
     - go get -d -v ./...
     - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
-#
     - echo -e "#####\ncreate tar and checksum\n#####"
     - cp swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
@@ -26,24 +25,6 @@ build:
     - mkdir -p ${BUILD_DIR}
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/$(PACKAGE_NAME}.tar.gz swarm etc/
     - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
-#
-    - echo -e "#####\create deb and checksum\n#####"
-    - mkdir -p ${BUILD_DIR}/package/${PACKAGE_NAME}/DEBIAN 
-    - mkdir -p ${BUILD_DIR}/package/${PACKAGE_NAME}/usr/local/bin
-    - echo -e "Package: swarm\nVersion: ${VERSION}-${BUILD_NUMBER}\nSection: admin\nPriority: optional\nArchitecture: armhf\nEssential: no\nInstalled-Size: <SIZE>\nMaintainer: blog.hypriot.com\nDescription: ${DESCRIPTION}\n${DEPENDENCIES}" > ${BUILD_DIR}/package/${PACKAGE_NAME}/DEBIAN/control
-    - cat ${BUILD_DIR}/package/${PACKAGE_NAME}/DEBIAN/control
-    - cp /drone/src/github.com/hypriot/rpi-swarm/content/swarm ${BUILD_DIR}/package/${PACKAGE_NAME}/usr/local/bin
-    - export BINARY_SIZE=$(stat -c %s $(BUILD_DIR)/binary/$(BINARY_NAME))
-    - sed 's|<SIZE>|${BINARY_SIZE}|g' -i ${BUILD_DIR}/package/${PACKAGE_NAME}/DEBIAN/control
-    - cd ${BUILD_DIR}/package
-    - dpkg-deb --build ${PACKAGE_NAME}
-    - shasum -a 256 ${PACKAGE_NAME}.deb > ${PACKAGE_NAME}.deb.sha256
-    - rm -R ${BUILD_DIR}/package/${PACKAGE_NAME}
-    - cd .. && mv package/* ./ && rm -r package
-    - echo -e "#####\ncreate docker image folder\n#####"
-    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/{PACKAGE_NAME}/${TIMESTAMP}_${REPO}
-    - mkdir -p ${IMAGE_DIR}
-    - ln -s ${IMAGE_DIR} ${BUILD_RESULTS}/latest/
 
 publish:
   docker:
