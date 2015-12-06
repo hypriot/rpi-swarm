@@ -23,7 +23,7 @@ build:
     - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
     - export REPO=$(git rev-parse --short HEAD)
     - export BUILD_RESULTS=/drone/src/buildresult
-    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/{PACKAGE_NAME}/${TIMESTAMP}_${REPO}
+    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
     - mkdir -p ${BUILD_DIR}
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
     - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
