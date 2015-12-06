@@ -14,7 +14,8 @@ build:
     - go get -d -v ./...
     - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
     - echo -e "#####\ncreate tar and checksum\n#####"
-    - cp swarm /drone/src/github.com/hypriot/rpi-swarm/content/
+    - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
+    - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
     - basename `git rev-parse --show-toplevel`
     - export PACKAGE_NAME=swarm
@@ -33,7 +34,7 @@ publish:
     username: $$DOCKER_USER
     password: $$DOCKER_PASS
     email: $$DOCKER_EMAIL
-    repo: hypriot/rpi-registrator
+    repo: hypriot/rpi-swarm
     tag: 
       - v1.0.0
       - latest
