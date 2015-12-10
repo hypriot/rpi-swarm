@@ -1,0 +1,67 @@
+debug: true
+
+build:
+  image: hypriot/rpi-golang:1.5
+  commands:
+    - export DESCRIPTION="$(cat DESCRIPTION)"
+    - export DEPENDENCIES="$(cat DEPENDENCIES)"
+    - apt-get update && apt-get install -y mercurial ca-certificates
+    - export VERSION=v1.0.1
+    - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
+    - cd ${GOPATH}/src/github.com/docker/swarm
+    - go get -v github.com/tools/godep
+    - go get -v -d github.com/docker/swarm
+    - go get -d -v ./...
+    - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
+    - echo -e "#####\ncreate tar and checksum\n#####"
+    - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
+    - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
+    - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
+    - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
+    - basename `git rev-parse --show-toplevel`
+    - export PACKAGE_NAME=swarm
+    - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
+    - export REPO=$(git rev-parse --short HEAD)
+    - export BUILD_RESULTS=/drone/src/buildresult
+    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
+    - mkdir -p ${BUILD_DIR}
+    - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
+    - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
+    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
+    - mkdir -p ${IMAGE_DIR}
+    - ln -s ${IMAGE_DIR} /drone/src/buildresult/latest
+
+publish:
+  docker:
+#    environment:
+#      - DOCKER_LAUNCH_DEBUG=true
+    username: $$DOCKER_USER
+    password: $$DOCKER_PASS
+    email: $$DOCKER_EMAIL
+    repo: hypriot/rpi-swarm
+    tag: 
+      - 1.0.1
+      - latest
+    save:
+      file: /drone/src/buildresult/latest/swarm.tar
+
+  s3:   
+    acl: public-read
+    region: $$AWS_DEFAULT_REGION
+    bucket: $$AWS_BUCKET
+    access_key: $$AWS_ACCESS_KEY_ID
+    secret_key: $$AWS_SECRET_ACCESS_KEY
+    source: /drone/src/buildresult/
+    target: /
+    recursive: true
+
+notify:
+  slack:
+    webhook_url: $$SLACK_WEBHOOK_URL
+    channel: buildstatus
+    username: Drone
+    when:
+      started: false
+      success: true
+      failure: true
+
