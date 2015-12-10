@@ -40,7 +40,7 @@ publish:
     email: $$DOCKER_EMAIL
     repo: hypriot/rpi-swarm
     tag: 
-      - v1.0.1
+      - 1.0.1
       - latest
     save:
       file: /drone/src/buildresult/latest/swarm.tar
