@@ -7,7 +7,7 @@ build:
     - export DEPENDENCIES="$(cat DEPENDENCIES)"
     - apt-get update && apt-get install -y mercurial ca-certificates
     - export VERSION=v1.0.1
-    - git clone --branch v1.0.0 https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
+    - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
     - cd ${GOPATH}/src/github.com/docker/swarm
     - go get -v github.com/tools/godep
     - go get -v -d github.com/docker/swarm
@@ -19,7 +19,7 @@ build:
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
     - basename `git rev-parse --show-toplevel`
-    - export PACKAGE_NAME=swarm-${VERSION}-$$DRONE_BUILD_NUMBER
+    - export PACKAGE_NAME=swarm
     - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
     - export REPO=$(git rev-parse --short HEAD)
     - export BUILD_RESULTS=/drone/src/buildresult
