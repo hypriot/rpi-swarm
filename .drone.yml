@@ -12,9 +12,8 @@ build:
     - mkdir -p /drone/src/github.com/docker/
     - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
     - git clone --branch v${VERSION} https://github.com/docker/swarm /drone/src/github.com/docker/swarm
-    - docker info
     - echo -e "####\nbuild swarm binary\n####"
-    - docker run --rm -v /drone/:/gopath1.5/ -e DESCRIPTION="$(cat DESCRIPTION)" -e DEPENDENCIES="$(cat DEPENDENCIES)" -e VERSION -e TIMESTAMP hypriot/rpi-golang:1.5 /bin/bash -c "apt-get update && apt-get install -y mercurial && cd ${GOPATH}/src/github.com/docker/swarm && go get -v github.com/tools/godep && go get -v -d github.com/docker/swarm && go get -d -v ./... && CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags \"-static\" -s' ."
+    - docker run --rm -v /drone/:/gopath1.5/ -e DESCRIPTION="$(cat DESCRIPTION)" -e DEPENDENCIES="$(cat DEPENDENCIES)" -e VERSION -e TIMESTAMP hypriot/rpi-golang:1.5 /bin/bash -c "apt-get update && apt-get install -y mercurial && cd /gopath1.5/src/github.com/docker/swarm && go get -v github.com/tools/godep && go get -v -d github.com/docker/swarm && go get -d -v ./... && CGO_ENABLED=0 /gopath1.5/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags \"-static\" -s' ."
     - echo -e "#####\ncreate tar and checksum\n#####"
     - cp /drone/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
