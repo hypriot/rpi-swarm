@@ -2,8 +2,6 @@
 
 build:
   image: firecyberice/rpi-docker:1.10.0-dev
-  extra_hosts:
-    - docker
   environment:
     - DOCKER_HOST=tcp://localhost:2375
   commands:
