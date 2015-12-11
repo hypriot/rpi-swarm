@@ -24,7 +24,7 @@ build:
     - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
     - mkdir -p ${BUILD_DIR}
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
+    - cd ${BUILD_DIR} && sha256sum ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
     - echo -e "####\ndockerize it\n####"
     - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
     - mkdir -p ${IMAGE_DIR}
