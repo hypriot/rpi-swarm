@@ -9,6 +9,8 @@ build:
     - export VERSION=v1.0.0
     - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
     - cd ${GOPATH}/src/github.com/docker/swarm
+    - go get -d github.com/docker/docker/pkg/parsers/filters
+    - go get -d github.com/docker/docker/pkg/units
     - go get -v github.com/tools/godep
     - go get -v -d github.com/docker/swarm
     - go get -d -v ./...
