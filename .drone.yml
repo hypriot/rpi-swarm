@@ -6,7 +6,7 @@ build:
     - export DESCRIPTION="$(cat DESCRIPTION)"
     - export DEPENDENCIES="$(cat DEPENDENCIES)"
     - apt-get update && apt-get install -y mercurial ca-certificates
-    - export VERSION=v1.0.1
+    - export VERSION=v1.0.0
     - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
     - cd ${GOPATH}/src/github.com/docker/swarm
     - go get -v github.com/tools/godep
@@ -40,7 +40,7 @@ publish:
     email: $$DOCKER_EMAIL
     repo: hypriot/rpi-swarm
     tag: 
-      - 1.0.1
+      - 1.0.0
       - latest
     save:
       file: /drone/src/buildresult/latest/swarm.tar
