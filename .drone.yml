@@ -59,7 +59,7 @@ publish:
     repo: hypriot/rpi-swarm
     tag:
       - 1.2.1
-      - latest
+#      - latest
     save:
       file: /drone/src/buildresult/latest/swarm.tar
 
