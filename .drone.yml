@@ -56,7 +56,7 @@ publish:
     email: $$DOCKER_EMAIL
     repo: hypriot/rpi-swarm
     tag:
-      - 1.2.0
+      - 1.2.1
       - latest
     save:
       file: /drone/src/buildresult/latest/swarm.tar
