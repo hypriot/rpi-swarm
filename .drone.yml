@@ -12,7 +12,7 @@ build:
     - go get -v github.com/tools/godep
 #    - go get -v -d github.com/docker/swarm
     - echo "get dependencies"
-    - git clone -b v1.10.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
+    - git clone -b v1.11.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
     - go get -v -d ./...
     - echo "start building"
     - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
