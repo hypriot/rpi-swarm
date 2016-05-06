@@ -19,15 +19,15 @@ build:
     - fgt find test/ -type f \( -name "*.sh" -or -name "*.bash" -or -name "*.bats" \) -exec grep -Hn -e "^ " {} \;
     - export GO15VENDOREXPERIMENT=1
     - export GOARM=6
-    - GOOS=linux go build
+    - export GOOS=linux
 #    - go test -v -race `go list ./... | grep -v /vendor/`
 
     # - go get -v -d github.com/docker/swarm
     # - echo "get dependencies"
     # - git clone -b v1.10.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
     # - go get -v -d ./...
-    # - echo "start building"
-    # - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
+    - echo "start building"
+    - CGO_ENABLED=0 ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
     - echo -e "#####\ncreate tar and checksum\n#####"
     - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
     # - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
