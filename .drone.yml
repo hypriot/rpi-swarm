@@ -6,19 +6,33 @@ build:
     - export DESCRIPTION="$(cat DESCRIPTION)"
     - export DEPENDENCIES="$(cat DEPENDENCIES)"
     - apt-get update && apt-get install -y mercurial ca-certificates
-    - export VERSION=v1.2.0
+    - export VERSION=v1.2.1
     - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
     - cd ${GOPATH}/src/github.com/docker/swarm
     - go get -v github.com/tools/godep
-#    - go get -v -d github.com/docker/swarm
-    - echo "get dependencies"
-    - git clone -b v1.10.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
-    - go get -v -d ./...
+    - go get github.com/golang/lint/golint
+    - go get github.com/GeertJohan/fgt
+    - script/validate-gofmt
+    - go vet `go list ./... | grep -v /vendor/`
+    - fgt golint ./... | grep -v vendor/ | tee /dev/stderr
+    # Lint shell files and make sure they are not space indented.
+    - fgt find test/ -type f \( -name "*.sh" -or -name "*.bash" -or -name "*.bats" \) -exec grep -Hn -e "^ " {} \;
+    - export GO15VENDOREXPERIMENT=1
+    - export GOARM=6
+    - export GOOS=linux
+#    - go test -v -race `go list ./... | grep -v /vendor/`
+
+    # - go get -v -d github.com/docker/swarm
+    # - echo "get dependencies"
+    # - git clone -b v1.10.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
+    # - go get -v -d ./...
     - echo "start building"
-    - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
+    - CGO_ENABLED=0 ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
     - echo -e "#####\ncreate tar and checksum\n#####"
     - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
-    - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
+    # - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
+    - ls -lah ${GOPATH}/src/github.com/docker/swarm/
+    - cp ${GOPATH}/src/github.com/docker/swarm/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
     - basename `git rev-parse --show-toplevel`
@@ -34,6 +48,7 @@ build:
     - mkdir -p ${IMAGE_DIR}
     - ln -s ${IMAGE_DIR} /drone/src/buildresult/latest
 
+
 publish:
   docker:
 #    environment:
@@ -43,8 +58,8 @@ publish:
     email: $$DOCKER_EMAIL
     repo: hypriot/rpi-swarm
     tag:
-      - 1.2.0
-      - latest
+      - 1.2.1
+#      - latest
     save:
       file: /drone/src/buildresult/latest/swarm.tar
 
