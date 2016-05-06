@@ -20,7 +20,7 @@ build:
     - export GO15VENDOREXPERIMENT=1
     - export GOARM=6
     - GOOS=linux go build
-    - go test -v -race `go list ./... | grep -v /vendor/`
+#    - go test -v -race `go list ./... | grep -v /vendor/`
 
     # - go get -v -d github.com/docker/swarm
     # - echo "get dependencies"
