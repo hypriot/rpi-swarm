@@ -6,13 +6,13 @@ build:
     - export DESCRIPTION="$(cat DESCRIPTION)"
     - export DEPENDENCIES="$(cat DEPENDENCIES)"
     - apt-get update && apt-get install -y mercurial ca-certificates
-    - export VERSION=v1.2.0
+    - export VERSION=v1.2.1
     - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
     - cd ${GOPATH}/src/github.com/docker/swarm
     - go get -v github.com/tools/godep
 #    - go get -v -d github.com/docker/swarm
     - echo "get dependencies"
-    - git clone -b v1.10.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
+    - git clone -b v1.11.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
     - go get -v -d ./...
     - echo "start building"
     - CGO_ENABLED=0 ${GOPATH}/bin/godep go install -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
@@ -43,7 +43,7 @@ publish:
     email: $$DOCKER_EMAIL
     repo: hypriot/rpi-swarm
     tag:
-      - 1.2.0
+      - 1.2.1
       - latest
     save:
       file: /drone/src/buildresult/latest/swarm.tar
