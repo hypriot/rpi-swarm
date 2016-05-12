@@ -74,6 +74,8 @@ publish:
     source: /drone/src/buildresult/
     target: /
     recursive: true
+    when:
+      event: tag
 
 notify:
   slack:
