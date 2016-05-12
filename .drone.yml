@@ -33,15 +33,13 @@ build:
     - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
     - export REPO=$(git rev-parse --short HEAD)
     - export BUILD_RESULTS=/drone/src/buildresult
-    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
+    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}
     - mkdir -p ${BUILD_DIR}
     - echo -e "#####\ncreate tar and checksum\n#####"
-    - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
-    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
+    - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz swarm etc/
+    - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
+    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}
     - mkdir -p ${IMAGE_DIR}
-    - ln -s ${IMAGE_DIR} /drone/src/buildresult/latest
-
 
 publish:
   docker:
@@ -57,12 +55,14 @@ publish:
     when:
       event: tag
     save:
-      file: /drone/src/buildresult/latest/rpi-swarm-image.tar
+      file: /drone/src/buildresult/docker-images/swarm/rpi-swarm-image.tar
 
   github_release:
     api_key: $$GITHUB_RELEASE_TOKEN
     files:
-      - /drone/src/buildresult/latest/*
+      - /drone/src/buildresult/*.tar.gz
+      - /drone/src/buildresult/*.tar.gz.sha256
+      - /drone/src/buildresult/*.tar
     when:
       event: tag
 
