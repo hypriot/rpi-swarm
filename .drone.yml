@@ -15,22 +15,15 @@ build:
     - script/validate-gofmt
     - go vet `go list ./... | grep -v /vendor/`
     - fgt golint ./... | grep -v vendor/ | tee /dev/stderr
-    # Lint shell files and make sure they are not space indented.
+    - echo "Lint shell files and make sure they are not space indented."
     - fgt find test/ -type f \( -name "*.sh" -or -name "*.bash" -or -name "*.bats" \) -exec grep -Hn -e "^ " {} \;
     - export GO15VENDOREXPERIMENT=1
     - export GOARM=6
     - export GOOS=linux
-#    - go test -v -race `go list ./... | grep -v /vendor/`
-
-    # - go get -v -d github.com/docker/swarm
-    # - echo "get dependencies"
-    # - git clone -b v1.10.0 https://github.com/docker/docker /drone/src/github.com/docker/docker
-    # - go get -v -d ./...
     - echo "start building"
     - CGO_ENABLED=0 ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
-    - echo -e "#####\ncreate tar and checksum\n#####"
+    - echo "prepare result bundle"
     - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
-    # - cp ${GOPATH}/bin/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - ls -lah ${GOPATH}/src/github.com/docker/swarm/
     - cp ${GOPATH}/src/github.com/docker/swarm/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
@@ -42,6 +35,7 @@ build:
     - export BUILD_RESULTS=/drone/src/buildresult
     - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
     - mkdir -p ${BUILD_DIR}
+    - echo -e "#####\ncreate tar and checksum\n#####"
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
     - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
     - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
