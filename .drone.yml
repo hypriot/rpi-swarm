@@ -38,8 +38,7 @@ build:
     - echo -e "#####\ncreate tar and checksum\n#####"
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz swarm etc/
     - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
-    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}
-    - mkdir -p ${IMAGE_DIR}
+#    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}
 
 publish:
   docker:
@@ -60,9 +59,9 @@ publish:
   github_release:
     api_key: $$GITHUB_RELEASE_TOKEN
     files:
-      - /drone/src/buildresult/*.tar.gz
-      - /drone/src/buildresult/*.tar.gz.sha256
-      - /drone/src/buildresult/*.tar
+      - /drone/src/buildresult/arm-binaries/swarm/*.tar.gz
+      - /drone/src/buildresult/arm-binaries/swarm/*.tar.gz.sha256
+      - /drone/src/buildresult/docker-images/swarm/*.tar
     when:
       event: tag
 
