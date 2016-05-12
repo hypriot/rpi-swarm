@@ -54,8 +54,17 @@ publish:
     tag:
       - 1.2.2
       - latest
+    when:
+      event: tag
     save:
-      file: /drone/src/buildresult/latest/swarm.tar
+      file: /drone/src/buildresult/latest/rpi-swarm-image.tar
+
+  github_release:
+    api_key: $$GITHUB_RELEASE_TOKEN
+    files:
+      - /drone/src/buildresult/latest/*
+    when:
+      event: tag
 
   s3:
     acl: public-read
