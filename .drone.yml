@@ -42,8 +42,8 @@ build:
 
 publish:
   docker:
-    environment:
-      - DOCKER_LAUNCH_DEBUG=true
+#    environment:
+#      - DOCKER_LAUNCH_DEBUG=true
     username: $$DOCKER_USER
     password: $$DOCKER_PASS
     email: $$DOCKER_EMAIL
@@ -56,14 +56,14 @@ publish:
     save:
       file: /drone/src/buildresult/docker-images/swarm/rpi-swarm-image.tar
 
-  github_release:
-    api_key: $$GITHUB_RELEASE_TOKEN
-    files:
-      - /drone/src/buildresult/arm-binaries/swarm/*.tar.gz
-      - /drone/src/buildresult/arm-binaries/swarm/*.tar.gz.sha256
-      - /drone/src/buildresult/docker-images/swarm/*.tar
-    when:
-      event: tag
+#  github_release:
+#    api_key: $$GITHUB_RELEASE_TOKEN
+#    files:
+#      - /drone/src/buildresult/arm-binaries/swarm/*.tar.gz
+#      - /drone/src/buildresult/arm-binaries/swarm/*.tar.gz.sha256
+#      - /drone/src/buildresult/docker-images/swarm/*.tar
+#    when:
+#      event: tag
 
   s3:
     acl: public-read
