@@ -2,9 +2,12 @@ debug: true
 
 build:
   image: hypriot/rpi-golang:1.5
+  environment:
+  - GO15VENDOREXPERIMENT=1
+  - GOARM=6
+  - GOOS=linux
+  - CGO_ENABLED=0
   commands:
-    - export DESCRIPTION="$(cat DESCRIPTION)"
-    - export DEPENDENCIES="$(cat DEPENDENCIES)"
     - apt-get update && apt-get install -y mercurial ca-certificates
     - export VERSION=v1.2.2
     - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
@@ -17,28 +20,21 @@ build:
     - fgt golint ./... | grep -v vendor/ | tee /dev/stderr
     - echo "Lint shell files and make sure they are not space indented."
     - fgt find test/ -type f \( -name "*.sh" -or -name "*.bash" -or -name "*.bats" \) -exec grep -Hn -e "^ " {} \;
-    - export GO15VENDOREXPERIMENT=1
-    - export GOARM=6
-    - export GOOS=linux
     - echo "start building"
-    - CGO_ENABLED=0 ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
+    - ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
     - echo "prepare result bundle"
     - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
-    - ls -lah ${GOPATH}/src/github.com/docker/swarm/
     - cp ${GOPATH}/src/github.com/docker/swarm/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
-    - basename `git rev-parse --show-toplevel`
     - export PACKAGE_NAME=swarm
     - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
-    - export REPO=$(git rev-parse --short HEAD)
-    - export BUILD_RESULTS=/drone/src/github.com/hypriot/rpi-swarm/buildresult
-    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}
+    - export BUILD_DIR=/drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/${PACKAGE_NAME}
     - mkdir -p ${BUILD_DIR}
-    - echo -e "#####\ncreate tar and checksum\n#####"
+    - echo "create tar and checksum"
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/
-    - tar czf ${BUILD_DIR}/${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
+    - tar czf ${BUILD_DIR}/${TIMESTAMP}_$$DRONE_TAG_${PACKAGE_NAME}.tar.gz swarm etc/
+    - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_$$DRONE_TAG_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
 
 publish:
   docker:
@@ -50,17 +46,17 @@ publish:
     repo: hypriot/rpi-swarm
     file: Dockerfile
     tag:
-      - 1.2.2-test
+      - $$TAG
     when:
       event: tag
     save:
-      destination: /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_dockerimage.tar
-      tag: 1.2.2-test
+      destination: /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_$$TAG_dockerimage.tar
+      tag: $$TAG
 
   github_release:
-    api_key: $$GITHUB__RELEASE_TOKEN
+    api_key: $$GITHUB_RELEASE_TOKEN
     files:
-      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_dockerimage.tar
+      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_$$TAG_dockerimage.tar
       - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/*.tar.gz
       - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/*.tar.gz.sha256
     when:
