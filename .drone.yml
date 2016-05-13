@@ -55,7 +55,7 @@ publish:
       event: tag
     save:
       destination: /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_dockerimage.tar
-      tag: latest
+      tag: 1.2.2-test
 
   github_release:
     api_key: $$GITHUB__RELEASE_TOKEN
