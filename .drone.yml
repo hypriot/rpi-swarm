@@ -33,8 +33,8 @@ build:
     - mkdir -p ${BUILD_DIR}
     - echo "create tar and checksum"
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/
-    - tar czf ${BUILD_DIR}/${TIMESTAMP}_$$DRONE_TAG_${PACKAGE_NAME}.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_$$DRONE_TAG_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
+    - tar czf ${BUILD_DIR}/${TIMESTAMP}_$$_TAG_${PACKAGE_NAME}.tar.gz swarm etc/
+    - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_$$TAG_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
 
 publish:
   docker:
@@ -68,7 +68,7 @@ publish:
     bucket: $$AWS_BUCKET
     access_key: $$AWS_ACCESS_KEY_ID
     secret_key: $$AWS_SECRET_ACCESS_KEY
-    source: /drone/src/buildresult/
+    source: /drone/src/github.com/hypriot/rpi-swarm/buildresult/
     target: /
     recursive: true
     when:
