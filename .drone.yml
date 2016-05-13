@@ -50,8 +50,7 @@ publish:
     repo: hypriot/rpi-swarm
     file: Dockerfile
     tag:
-      - 1.2.2
-      - latest
+      - 1.2.2-test
     when:
       event: tag
     save:
