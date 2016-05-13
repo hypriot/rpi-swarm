@@ -62,18 +62,6 @@ publish:
     when:
       event: tag
 
-  s3:
-    acl: public-read
-    region: $$AWS_DEFAULT_REGION
-    bucket: $$AWS_BUCKET
-    access_key: $$AWS_ACCESS_KEY_ID
-    secret_key: $$AWS_SECRET_ACCESS_KEY
-    source: /drone/src/github.com/hypriot/rpi-swarm/buildresult/
-    target: /
-    recursive: true
-    when:
-      event: tag
-
 notify:
   slack:
     webhook_url: $$SLACK_WEBHOOK_URL
