@@ -27,14 +27,12 @@ build:
     - cp ${GOPATH}/src/github.com/docker/swarm/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
-    - export PACKAGE_NAME=swarm
-    - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
-    - export BUILD_DIR=/drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/${PACKAGE_NAME}
+    - export BUILD_DIR=/drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm
     - mkdir -p ${BUILD_DIR}
     - echo "create tar and checksum"
     - cd /drone/src/github.com/hypriot/rpi-swarm/content/
-    - tar czf ${BUILD_DIR}/${TIMESTAMP}_$$_TAG_${PACKAGE_NAME}.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 ${TIMESTAMP}_$$TAG_${PACKAGE_NAME}.tar.gz > ${TIMESTAMP}_${REPO}_${PACKAGE_NAME}.tar.gz.sha256
+    - tar czf ${BUILD_DIR}/swarm_$$TAG.tar.gz swarm etc/
+    - cd ${BUILD_DIR} && shasum -a 256 swarm_$$TAG.tar.gz > swarm_$$TAG.tar.gz.sha256
 
 publish:
   docker:
@@ -57,8 +55,8 @@ publish:
     api_key: $$GITHUB_RELEASE_TOKEN
     files:
       - /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_$$TAG_dockerimage.tar
-      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/*.tar.gz
-      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/*.tar.gz.sha256
+      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/swarm_$$TAG.tar.gz
+      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/swarm_$$TAG.tar.gz.sha256
     when:
       event: tag
 
