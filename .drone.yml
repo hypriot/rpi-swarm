@@ -34,7 +34,7 @@ build:
     - ls -la .
     - tar czf ${BUILD_DIR}/swarm_$$TAG.tar.gz swarm etc/
     - cd ${BUILD_DIR}
-    - shasum -a 256 swarm_$$TAG.tar.gz > swarm_$$TAG.tar.gz.sha256
+    - sha256sum swarm_$$TAG.tar.gz > swarm_$$TAG.tar.gz.sha256
     - ls -la .
     - export IMAGE_NAME="hypriot/rpi-swarm"
     - cd /drone/src/github.com/hypriot/rpi-swarm/
@@ -43,7 +43,7 @@ build:
     - docker save --output=${IMAGE_PATH}/rpi-swarm_$$TAG_dockerimage.tar ${IMAGE_NAME}:$$TAG
     - cd ${IMAGE_PATH}
     - gzip rpi-swarm_$$TAG_dockerimage.tar
-    - shasum -a 256 rpi-swarm_$$TAG_dockerimage.tar.gz > rpi-swarm_$$TAG_dockerimage.tar.gz.sha256
+    - sha256sum rpi-swarm_$$TAG_dockerimage.tar.gz > rpi-swarm_$$TAG_dockerimage.tar.gz.sha256
     - ls -la .
     - docker login --username $$DOCKER_USER --password $$DOCKER_PASSWORD --email $$DOCKER_EMAIL
     - docker push ${IMAGE_NAME}:$$TAG
