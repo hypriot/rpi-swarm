@@ -75,16 +75,16 @@ publish:
     when:
       event: tag
 
-  publish:
-    s3:
-      acl: public-read
-      region: $$AWS_DEFAULT_REGION
-      bucket: $$AWS_BUCKET
-      access_key: $$AWS_ACCESS_KEY_ID
-      secret_key: $$AWS_SECRET_ACCESS_KEY
-      source: /drone/src/buildresult
-      target: /
-      recursive: true
+
+  s3:
+    acl: public-read
+    region: $$AWS_DEFAULT_REGION
+    bucket: $$AWS_BUCKET
+    access_key: $$AWS_ACCESS_KEY_ID
+    secret_key: $$AWS_SECRET_ACCESS_KEY
+    source: /drone/src/buildresult
+    target: /
+    recursive: true
 
 notify:
   slack:
