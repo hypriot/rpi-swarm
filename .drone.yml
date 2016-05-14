@@ -1,71 +1,91 @@
 debug: true
 
+compose:
+  docker:
+    privileged: true
+    image: firecyberice/rpi-docker:1.10.0-dev-dind
+
 build:
-  image: hypriot/rpi-golang:1.5
+  image: firecyberice/rpi-docker:1.10.0-dev
+  environment:
+    - DOCKER_HOST=tcp://localhost:2375
+  when:
+    event: tag
   commands:
-    - export DESCRIPTION="$(cat DESCRIPTION)"
-    - export DEPENDENCIES="$(cat DEPENDENCIES)"
-    - apt-get update && apt-get install -y mercurial ca-certificates
-    - export VERSION=v1.2.2
-    - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
-    - cd ${GOPATH}/src/github.com/docker/swarm
-    - go get -v github.com/tools/godep
-    - go get github.com/golang/lint/golint
-    - go get github.com/GeertJohan/fgt
-    - script/validate-gofmt
-    - go vet `go list ./... | grep -v /vendor/`
-    - fgt golint ./... | grep -v vendor/ | tee /dev/stderr
-    - echo "Lint shell files and make sure they are not space indented."
-    - fgt find test/ -type f \( -name "*.sh" -or -name "*.bash" -or -name "*.bats" \) -exec grep -Hn -e "^ " {} \;
-    - export GO15VENDOREXPERIMENT=1
-    - export GOARM=6
-    - export GOOS=linux
-    - echo "start building"
-    - CGO_ENABLED=0 ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
+    - apk update && apk add git ca-certificates
+    - export VERSION=$(echo $$TAG | tr -d v)
+    - export IMAGE_NAME=hypriot/rpi-swarm
+    - mkdir -p /drone/src/github.com/docker/
+    - git clone --branch v1.2.2 https://github.com/docker/swarm /drone/src/github.com/docker/swarm
+
+    - echo "build swarm binary"
+    - CID=$(docker run --rm -v /drone/:/gopath1.5/ -e GO15VENDOREXPERIMENT=1 -e GOARM=6 -e GOOS=linux
+    hypriot/rpi-golang:1.5 /bin/bash -c "apt-get update && apt-get install -y mercurial && cd /gopath1.5/src/github.com/docker/swarm && go get -v github.com/tools/godep && go get -v github.com/golang/lint/golint && go get -v github.com/GeertJohan/fgt && script/validate-gofmt && go vet `go list ./... | grep -v /vendor/` && fgt golint ./... | grep -v vendor/ | tee /dev/stderr && fgt find test/ -type f \( -name \"*.sh\" -or -name \"*.bash\" -or -name \"*.bats\" \) -exec grep -Hn -e \"^ \" {} \; && CGO_ENABLED=0 /gopath1.5/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags \"-static\" -s' .")
+
     - echo "prepare result bundle"
+    - export BUILD_DIR=/drone/src/github.com/hypriot/rpi-swarm/result/arm-binaries/swarm
+    - mkdir -p ${BUILD_DIR}
+    - export IMAGE_PATH="/drone/src/github.com/hypriot/rpi-swarm/result/docker-image/"
+    - mkdir -p ${IMAGE_PATH}
     - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
-    - ls -lah ${GOPATH}/src/github.com/docker/swarm/
     - cp ${GOPATH}/src/github.com/docker/swarm/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
-    - basename `git rev-parse --show-toplevel`
-    - export PACKAGE_NAME=swarm
-    - export TIMESTAMP=$(date +"%Y-%m-%d_%H%M")
-    - export REPO=$(git rev-parse --short HEAD)
-    - export BUILD_RESULTS=/drone/src/buildresult
-    - export BUILD_DIR=${BUILD_RESULTS}/arm-binaries/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
-    - mkdir -p ${BUILD_DIR}
-    - echo -e "#####\ncreate tar and checksum\n#####"
-    - cd /drone/src/github.com/hypriot/rpi-swarm/content/ && tar czf ${BUILD_DIR}/${PACKAGE_NAME}.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 ${PACKAGE_NAME}.tar.gz > ${PACKAGE_NAME}.tar.gz.sha256
-    - export IMAGE_DIR=${BUILD_RESULTS}/docker-images/${PACKAGE_NAME}/${TIMESTAMP}_${REPO}
-    - mkdir -p ${IMAGE_DIR}
-    - ln -s ${IMAGE_DIR} /drone/src/buildresult/latest
-
+    - cd /drone/src/github.com/hypriot/rpi-swarm/content/
+    - ls -la .
+    - tar czf ${BUILD_DIR}/swarm_$$TAG.tar.gz swarm etc/
+    - cd ${BUILD_DIR}
+    - shasum -a 256 swarm_$$TAG.tar.gz > swarm_$$TAG.tar.gz.sha256
+    - ls -la .
+    - export IMAGE_NAME="hypriot/rpi-swarm"
+    - cd /drone/src/github.com/hypriot/rpi-swarm/
+    - echo "build docker image"
+    - docker build -t ${IMAGE_NAME}:$$TAG .
+    - docker save --output=${IMAGE_PATH}/rpi-swarm_$$TAG_dockerimage.tar ${IMAGE_NAME}:$$TAG
+    - cd ${IMAGE_PATH}
+    - gzip rpi-swarm_$$TAG_dockerimage.tar
+    - shasum -a 256 rpi-swarm_$$TAG_dockerimage.tar.gz > rpi-swarm_$$TAG_dockerimage.tar.gz.sha256
+    - ls -la .
+    - docker login --username $$DOCKER_USER --password $$DOCKER_PASSWORD --email $$DOCKER_EMAIL
+    - docker push ${IMAGE_NAME}:$$TAG
 
 publish:
-  docker:
-#    environment:
-#      - DOCKER_LAUNCH_DEBUG=true
-    username: $$DOCKER_USER
-    password: $$DOCKER_PASS
-    email: $$DOCKER_EMAIL
-    repo: hypriot/rpi-swarm
-    tag:
-      - 1.2.2
-      - latest
-    save:
-      file: /drone/src/buildresult/latest/swarm.tar
+#   docker:
+# #    environment:
+# #      - DOCKER_LAUNCH_DEBUG=true
+#     username: $$DOCKER_USER
+#     password: $$DOCKER_PASS
+#     email: $$DOCKER_EMAIL
+#     repo: hypriot/rpi-swarm
+#     file: Dockerfile
+#     tag:
+#       - $$TAG
+#     when:
+#       event: tag
+#     save:
+#       destination: /drone/src/github.com/hypriot/rpi-swarm/result/rpi-swarm_$$TAG_dockerimage.tar
+#       tag: $$TAG
 
-  s3:
-    acl: public-read
-    region: $$AWS_DEFAULT_REGION
-    bucket: $$AWS_BUCKET
-    access_key: $$AWS_ACCESS_KEY_ID
-    secret_key: $$AWS_SECRET_ACCESS_KEY
-    source: /drone/src/buildresult/
-    target: /
-    recursive: true
+  github_release:
+    api_key: $$GITHUB_RELEASE_TOKEN
+    files:
+      - /drone/src/github.com/hypriot/rpi-swarm/result/arm-binaries/swarm/swarm_$$TAG.tar.gz
+      - /drone/src/github.com/hypriot/rpi-swarm/result/arm-binaries/swarm/swarm_$$TAG.tar.gz.sha256
+      - /drone/src/github.com/hypriot/rpi-swarm/result/docker-image/rpi-swarm_$$TAG_dockerimage.tar.gz
+      - /drone/src/github.com/hypriot/rpi-swarm/result/docker-image/rpi-swarm_$$TAG_dockerimage.tar.gz.sha256
+    when:
+      event: tag
+
+  publish:
+    s3:
+      acl: public-read
+      region: $$AWS_DEFAULT_REGION
+      bucket: $$AWS_BUCKET
+      access_key: $$AWS_ACCESS_KEY_ID
+      secret_key: $$AWS_SECRET_ACCESS_KEY
+      source: /drone/src/buildresult
+      target: /
+      recursive: true
 
 notify:
   slack:
