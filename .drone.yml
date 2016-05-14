@@ -19,8 +19,7 @@ build:
     - git clone --branch v1.2.2 https://github.com/docker/swarm /drone/src/github.com/docker/swarm
 
     - echo "build swarm binary"
-    - CID=$(docker run --rm -v /drone/:/gopath1.5/ -e GO15VENDOREXPERIMENT=1 -e GOARM=6 -e GOOS=linux
-    hypriot/rpi-golang:1.5 /bin/bash -c "apt-get update && apt-get install -y mercurial && cd /gopath1.5/src/github.com/docker/swarm && go get -v github.com/tools/godep && go get -v github.com/golang/lint/golint && go get -v github.com/GeertJohan/fgt && script/validate-gofmt && go vet `go list ./... | grep -v /vendor/` && fgt golint ./... | grep -v vendor/ | tee /dev/stderr && fgt find test/ -type f \( -name \"*.sh\" -or -name \"*.bash\" -or -name \"*.bats\" \) -exec grep -Hn -e \"^ \" {} \; && CGO_ENABLED=0 /gopath1.5/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags \"-static\" -s' .")
+    - CID=$(docker run --rm -v /drone/:/gopath1.5/ -e CGO_ENABLED=0 -e GO15VENDOREXPERIMENT=1 -e GOARM=6 -e GOOS=linux hypriot/rpi-golang:1.5 /bin/bash -c "apt-get update && apt-get install -y mercurial && cd /gopath1.5/src/github.com/docker/swarm && go get -v github.com/tools/godep && go get -v github.com/golang/lint/golint && go get -v github.com/GeertJohan/fgt && script/validate-gofmt && go vet `go list ./... | grep -v /vendor/` && fgt golint ./... | grep -v vendor/ | tee /dev/stderr && fgt find test/ -type f \( -name \"*.sh\" -or -name \"*.bash\" -or -name \"*.bats\" \) -exec grep -Hn -e \"^ \" {} \; && /gopath1.5/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags \"-static\" -s' .")
 
     - echo "prepare result bundle"
     - export BUILD_DIR=/drone/src/github.com/hypriot/rpi-swarm/result/arm-binaries/swarm
