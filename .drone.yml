@@ -9,6 +9,10 @@ build:
   image: firecyberice/rpi-docker:1.10.0-dev
   environment:
     - DOCKER_HOST=tcp://localhost:2375
+    - DOCKER_USER=$$DOCKER_USER
+    - DOCKER_PASS=$$DOCKER_PASS
+    - DOCKER_EMAIL=$$DOCKER_EMAIL
+
   when:
     event: tag
   commands:
@@ -45,7 +49,7 @@ build:
     - gzip rpi-swarm_$$TAG_dockerimage.tar
     - sha256sum rpi-swarm_$$TAG_dockerimage.tar.gz > rpi-swarm_$$TAG_dockerimage.tar.gz.sha256
     - ls -la .
-    - docker login --username $$DOCKER_USER --password $$DOCKER_PASS --email $$DOCKER_EMAIL
+    - docker login --username $DOCKER_USER --password $DOCKER_PASS --email $DOCKER_EMAIL
     - docker push ${IMAGE_NAME}:$$TAG
 
 publish:
