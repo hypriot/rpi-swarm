@@ -86,7 +86,7 @@ publish:
     bucket: $$AWS_BUCKET
     access_key: $$AWS_ACCESS_KEY_ID
     secret_key: $$AWS_SECRET_ACCESS_KEY
-    source: /drone/src/result
+    source: /drone/src/github.com/hypriot/rpi-swarm/result
     target: /
     recursive: true
     when:
