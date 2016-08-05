@@ -47,14 +47,10 @@ publish:
       - $$TAG
     when:
       event: tag
-#    save:
-#      destination: /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_$$TAG_dockerimage.tar
-#      tag: $$TAG
 
   github_release:
     api_key: $$GITHUB_RELEASE_TOKEN
     files:
-#      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/rpi-swarm_$$TAG_dockerimage.tar
       - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/swarm_$$TAG.tar.gz
       - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/swarm_$$TAG.tar.gz.sha256
     when:
