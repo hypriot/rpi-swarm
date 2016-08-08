@@ -1,4 +1,4 @@
-debug: true
+#debug: true
 
 build:
   image: hypriot/rpi-golang:1.5
@@ -10,6 +10,7 @@ build:
   commands:
     - apt-get update && apt-get install -y mercurial ca-certificates
     - export VERSION=$$TAG
+
     - git clone --branch ${VERSION} https://github.com/docker/swarm ${GOPATH}/src/github.com/docker/swarm
     - cd ${GOPATH}/src/github.com/docker/swarm
     - go get -v github.com/tools/godep
@@ -18,21 +19,18 @@ build:
     - script/validate-gofmt
     - go vet `go list ./... | grep -v /vendor/`
     - fgt golint ./... | grep -v vendor/ | tee /dev/stderr
+
     - echo "Lint shell files and make sure they are not space indented."
     - fgt find test/ -type f \( -name "*.sh" -or -name "*.bash" -or -name "*.bats" \) -exec grep -Hn -e "^ " {} \;
+
     - echo "start building"
     - ${GOPATH}/bin/godep go build -v -a -tags netgo -installsuffix netgo -ldflags '-extldflags "-static" -s' .
+
     - echo "prepare result bundle"
     - mkdir -p /drone/src/github.com/hypriot/rpi-swarm/content/
     - cp ${GOPATH}/src/github.com/docker/swarm/swarm /drone/src/github.com/hypriot/rpi-swarm/content/
     - chmod a+x /drone/src/github.com/hypriot/rpi-swarm/content/swarm
     - cp --parents /etc/ssl/certs/ca-certificates.crt /drone/src/github.com/hypriot/rpi-swarm/content/
-    - export BUILD_DIR=/drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm
-    - mkdir -p ${BUILD_DIR}
-    - echo "create tar and checksum"
-    - cd /drone/src/github.com/hypriot/rpi-swarm/content/
-    - tar czf ${BUILD_DIR}/swarm_$$TAG.tar.gz swarm etc/
-    - cd ${BUILD_DIR} && shasum -a 256 swarm_$$TAG.tar.gz > swarm_$$TAG.tar.gz.sha256
 
 publish:
   docker:
@@ -45,14 +43,7 @@ publish:
     file: Dockerfile
     tag:
       - $$TAG
-    when:
-      event: tag
-
-  github_release:
-    api_key: $$GITHUB_RELEASE_TOKEN
-    files:
-      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/swarm_$$TAG.tar.gz
-      - /drone/src/github.com/hypriot/rpi-swarm/buildresult/arm-binaries/swarm/swarm_$$TAG.tar.gz.sha256
+      - latest
     when:
       event: tag
 
